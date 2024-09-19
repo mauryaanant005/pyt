@@ -17,33 +17,22 @@ def load_css():
 # Load CSS
 load_css()
 
-# Function to fetch RSS feed
-def fetch_rss_feed(url):
-    try:
-        feed = feedparser.parse(url)
-        if feed.bozo == 1:  # Check if there was an error parsing the feed
-            st.error("Failed to fetch RSS feed. Please try again later.")
-            return None
-        return feed
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        return None
 
 # Create a navbar using streamlit-option-menu
-st.markdown(
-    """
-    <style>
-    .nav {
-        width: 100%; /* Adjust this value to set the navbar width */
-        height: 100px;
-    }
-    .nav-item {
-        flex-grow: 1; /* Distributes the menu items evenly across the navbar */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# st.markdown(
+#     """
+#     <style>
+#     .nav {
+#         width: 100%; /* Adjust this value to set the navbar width */
+#         height: 100px;
+#     }
+#     .nav-item {
+#         flex-grow: 1; /* Distributes the menu items evenly across the navbar */
+#     }
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
 
 # Your option menu with horizontal orientation
 selected = option_menu(
@@ -53,11 +42,11 @@ selected = option_menu(
     menu_icon="cast",
     default_index=0,
     orientation="horizontal",
-    styles={
-        "container": {"padding": "0!important", "background-color": "#f0f2f6"},
-        "nav-link": {"font-size": "16px", "text-align": "center", "margin": "0px", "--hover-color": "#eee"},
-        "nav-link-selected": {"background-color": "#afafda"},
-    }
+    # styles={
+    #     "container": {"padding": "0!important", "background-color": "#f0f2f6"},
+    #     "nav-link": {"font-size": "16px", "text-align": "center", "margin": "0px", "--hover-color": "#eee"},
+    #     "nav-link-selected": {"background-color": "#afafda"},
+    # }
 )
 
 # Load the dataset once and store it in session state
@@ -95,64 +84,167 @@ if selected == "Home":
 """, unsafe_allow_html=True)
    
 elif selected == "Quiz":
-           dataset = pd.read_csv("t20_wc.csv")
-           def initialize_quiz():
-            st.session_state['question_index'] = 0
-            st.session_state['score'] = 0
-            st.session_state['selected_answer'] = None
-            st.session_state['questions'] = st.session_state['df'].sample(n=min(len(st.session_state['df']), 10)).reset_index(drop=True)
-            st.session_state['user_answers'] = []
-       
-           def next_question():
-              correct_answer = st.session_state['questions'].loc[st.session_state['question_index'], 'Answer']
-              if st.session_state['selected_answer'] == correct_answer:
-                  st.session_state['score'] += 1
-              st.session_state['user_answers'].append({
-                  'question': st.session_state['questions'].loc[st.session_state['question_index'], 'Question'],
-                  'user_answer': st.session_state['selected_answer'],
-                  'correct_answer': correct_answer
-              })
-              st.session_state['question_index'] += 1
-              st.session_state['selected_answer'] = None
-       
-           def display_question():
-                  question = st.session_state['questions'].loc[st.session_state['question_index'], 'Question']
-                  options = [st.session_state['questions'].loc[st.session_state['question_index'], f'Option {i}'] for i in range(1, 5)]
-              
-                  st.markdown(f"**Question {st.session_state['question_index'] + 1}:** {question}")
-              
-                  selected_option = st.session_state['selected_answer']
-                  for option in options:
-                      if st.checkbox(option, key=f"option_{option}", value=(option == selected_option)):
-                          st.session_state['selected_answer'] = option
-              
-                  if st.button("Next", disabled=st.session_state['selected_answer'] is None):
-                      next_question()
-       
-           def display_results():
-                  st.write(f"Quiz Completed! Your score: {st.session_state['score']} out of {len(st.session_state['questions'])}.")
-                  st.write("### Your Answers and Correct Answers:")
-                  for answer in st.session_state['user_answers']:
-                      st.write(f"**Question:** {answer['question']}")
-                      st.write(f"**Your Answer:** {answer['user_answer']}")
-                      st.write(f"**Correct Answer:** {answer['correct_answer']}")
-                      st.write("---")
-              
-              # Main section
-           if 'df' not in st.session_state:
-                  st.session_state['df'] = pd.read_csv('mens_t20_world_cup_quiz.csv')
-              
-           if 'question_index' not in st.session_state or st.session_state.get('restart_quiz', False):
-                  initialize_quiz()
-                  st.session_state['restart_quiz'] = False
-              
-           if st.session_state['question_index'] < len(st.session_state['questions']):
-                  display_question()
-           else:
-                  display_results()
-           if st.button("Restart Quiz"):
-                   st.session_state['restart_quiz'] = True
-                   st.experimental_rerun()
+          if 'df' not in st.session_state:
+           st.session_state['df'] = pd.read_csv('t20_wc.csv')
+           st.markdown("""
+             <style>
+             /* Global styles */
+             body {
+                 font-family: 'Arial', sans-serif;
+                 background-color: #f4f4f4;
+                 color: #333;
+             }
+             
+             /* Margin and padding for the Streamlit app */
+             .stApp {
+                 margin: 20px;
+             }
+         
+             /* Custom button styles */
+             .stButton button {
+                 background-color: #AFAFDA;
+                 color: white;
+                 border: none;
+                 padding: 10px 20px;
+                 text-align: center;
+                 text-decoration: none;
+                 font-size: 16px;
+                 margin: 4px 2px;
+                 cursor: pointer;
+                 border-radius: 4px;
+                 transition: background-color 0.3s ease;
+             }
+         
+             /* Button hover effect */
+             .stButton button:hover {
+                 background-color: white;
+                 color: #AFAFDA;
+                 border: 2px solid #AFAFDA;
+             }
+         
+             /* Markdown content styling */
+             .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+                 color: #333;
+                 font-family: 'Arial', sans-serif;
+             }
+         
+             .stMarkdown h1 {
+                 font-size: 24px;
+                 border-bottom: 2px solid #4CAF50;
+                 padding-bottom: 10px;
+                 margin-bottom: 20px;
+             }
+         
+             .stMarkdown h2 {
+                 font-size: 20px;
+                 margin-bottom: 10px;
+             }
+         
+             .stMarkdown h3 {
+                 font-size: 18px;
+                 margin-bottom: 10px;
+             }
+         
+             .stMarkdown p {
+                 font-size: 16px;
+                 margin-bottom: 10px;
+                 line-height: 1.6;
+             }
+         
+             /* Custom selectbox styles */
+             .stSelectbox select {
+                 background-color: #fff;
+                 border: 1px solid #ddd;
+                 border-radius: 4px;
+                 padding: 10px;
+                 font-size: 16px;
+                 transition: border-color 0.3s ease;
+             }
+         
+             .stSelectbox select:hover {
+                 border-color: #aaa;
+             }
+         
+             /* Custom radio button styles */
+             .stRadio div {
+                 margin-bottom: 10px;
+                 padding: 5px;
+             }
+         
+             /* Write section styles */
+             .stWrite {
+                 font-size: 18px;
+                 line-height: 1.6;
+                 margin-top: 20px;
+                 color: #333;
+             }
+             </style>
+""",          unsafe_allow_html=True)
+         
+            
+   #          Initialize quiz function
+          def initialize_quiz():
+             st.session_state['question_index'] = 0
+             st.session_state['score'] = 0
+             st.session_state['selected_answer'] = None
+             st.session_state['questions'] = st.session_state['df'].sample(n=min(len(st.session_state['df']), 10)).reset_index(drop=True)
+             st.session_state['user_answers'] = []
+         
+   #       Function to handle next question
+          def next_question():
+             correct_answer = st.session_state['questions'].loc[st.session_state['question_index'], 'Answer']
+             if st.session_state['selected_answer'] == correct_answer:
+                 st.session_state['score'] += 1
+             st.session_state['user_answers'].append({
+                 'question': st.session_state['questions'].loc[st.session_state['question_index'], 'Question'],
+                 'user_answer': st.session_state['selected_answer'],
+                 'correct_answer': correct_answer
+             })
+             st.session_state['question_index'] += 1
+             st.session_state['selected_answer'] = None  # Reset selection for the next question
+         
+   #       Function to display each question with multiple choice options
+          def display_question():
+             question = st.session_state['questions'].loc[st.session_state['question_index'], 'Question']
+             options = [st.session_state['questions'].loc[st.session_state['question_index'], f'Option {i}'] for i in range(1, 5)]
+         
+             st.markdown(f"*Question {st.session_state['question_index'] + 1}:* {question}")
+         
+             # Use selectbox for the options
+             st.session_state['selected_answer'] = st.selectbox(
+                 "Select your answer:",
+                 ["Select an answer"] + options,  # Add a default option
+                 index=0
+             )
+         
+             # Disable the next button until a valid answer is selected
+             if st.session_state['selected_answer'] != "Select an answer":
+                 if st.button("Next"):
+                     next_question()
+         
+   #       Function to display the quiz results
+          def display_results():
+             st.write(f"Quiz Completed! Your score: {st.session_state['score']} out of {len(st.session_state['questions'])}.")
+             st.write("### Your Answers and Correct Answers:")
+             for answer in st.session_state['user_answers']:
+                 st.write(f"*Question:* {answer['question']}")
+                 st.write(f"*Your Answer:* {answer['user_answer']}")
+                 st.write(f"*Correct Answer:* {answer['correct_answer']}")
+                 st.write("---")
+         
+   #       Main section
+          if 'question_index' not in st.session_state or st.session_state.get('restart_quiz', False):
+             initialize_quiz()
+             st.session_state['restart_quiz'] = False
+         
+          if st.session_state['question_index'] < len(st.session_state['questions']):
+             display_question()
+          else:
+             display_results()
+         
+          if st.button("Restart Quiz"):
+             st.session_state['restart_quiz'] = True
+             st.experimental_rerun()
 
 elif selected == "Search":
     st.title("Search records")
@@ -184,57 +276,105 @@ elif selected == "Search":
 
 elif selected == "CricSet":
 
-# RSS feed URL
-  rss_url1= "https://static.cricinfo.com/rss/livescores.xml"  # Make sure this is a valid RSS feed URL
-  
-  # Fetch and display news and scorecards
-  st.title("Match Scorecards")
-  feed = fetch_rss_feed(rss_url1)
-  
-  if feed:
-      for entry in feed.entries[:5]:  # Limit to 5 entries
-          st.subheader(entry.title)
-          
-          # Check if it's a scorecard entry
-          if 'scorecard' in entry.title.lower():
-              st.markdown("### Scorecard")
+    def fetch_rss_feed(url):
+        try:
+            feed = feedparser.parse(url)
+            if feed.bozo == 1:  # bozo indicates there's a problem parsing the feed
+                st.error(f"Failed to parse feed: {feed.bozo_exception}")
+                return None
+            return feed
+        except Exception as e:
+            st.error(f"Error fetching the RSS feed: {str(e)}")
+            return None
+    
+    # RSS feed for live scorecards
+    rss_url1 = "https://static.cricinfo.com/rss/livescores.xml"
+    
+    # Fetch and display match scorecards
+    st.title("Match Scorecards")
+    feed = fetch_rss_feed(rss_url1)
+    
+    if feed:
+        for entry in feed.entries[:11]:  # Limit to 5 entries
+            st.subheader(entry.title)
             
-              st.write(entry.summary)
-          
-          st.write(f"[Read more]({entry.link})")
-          st.markdown("---")
-  
-
-  rss_url = "https://www.espncricinfo.com/rss/content/story/feeds/0.xml"  # Make sure this is a valid RSS feed URL
-  st.title("Latest Cricket News")
-  feed = fetch_rss_feed(rss_url)
-
-  if feed:
-        for entry in feed.entries[:10]:  # Limit to 10 latest news
+            # Display summary if available
+            if 'summary' in entry:
+                st.write(entry.summary)
+            
+            # Display link to full scorecard
+            st.write(f"[Read more]({entry.link})")
+            st.markdown("---")
+    else:
+        st.write("No scorecards available at the moment.")
+    
+    
+    # RSS feed for latest cricket news
+    rss_url2 = "https://sportstar.thehindu.com/cricket/feeder/default.rss"
+    
+    # Fetch and display cricket news
+    st.title("Latest Cricket News")
+    feed = fetch_rss_feed(rss_url2)
+    
+    if feed:
+        for entry in feed.entries[:15]:  # Limit to 10 latest news
             # Display title and description
             st.subheader(entry.title)
-            st.write(entry.description)
-
-            # Check for media content
+            
+            if 'description' in entry:
+                st.write(entry.description)
+    
+            # Check for media content (image or thumbnail)
             cover_image_url = None
-            if 'media_content' in entry:
+            if hasattr(entry, 'media_content'):
                 cover_image_url = entry.media_content[0].get('url')  # Media content image
-            elif 'media_thumbnail' in entry:
+            elif hasattr(entry, 'media_thumbnail'):
                 cover_image_url = entry.media_thumbnail[0].get('url')  # Thumbnail image
-
+    
             # Display cover image if available
             if cover_image_url:
                 st.image(cover_image_url, use_column_width=True)
-
-            # Display summary and link
+    
+            # Display summary and link to full story
             st.write(f"[Read more]({entry.link})")
             st.markdown("---")
+    else:
+            st.write("No cricket news available at the moment.")
 
 elif selected == "About":
    st.subheader("This website provides a detailed analysis of the T20 World Cup from 2007 to 2021. It offers comprehensive records for each World Cup, represented through various plots such as bar plots, pie plots, histograms, scatter plots, and line plots. We utilized powerful Python libraries, including NumPy for numerical operations, pandas for data manipulation, matplotlib for plotting, and Streamlit for creating interactive web applications. Additionally, the site includes interactive features that allow users to filter and explore the data in more depth.")
    st.markdown("---")
    st.write("We offer insights, statistics, and historical data about the tournament and its key moments.")
    st.markdown("Location : Mumbai 🗺️")
+   st.header("Our Team")
+       
+           # Contact details of the team members
+   st.subheader("Anant Maurya")
+   st.markdown("""
+           - **GitHub Profile:** [mauryaanant005](https://github.com/mauryaanant005)
+           - **LinkedIn Profile:** [mauryaanant005]()          
+           - **Role:** Full Stack Developer
+           """)
+       
+   st.subheader("Anas Malkani")
+   st.markdown("""
+           - **GitHub Profile:** [ANASMALKANI189](https://github.com/ANASMALKANI189)
+           - **Role:** Data Scientist
+           """)
+       
+   st.subheader("Rayyan Bhati")
+   st.markdown("""
+           - **GitHub Profile:** [RAYYAN2906](https://github.com/RAYYAN2906)
+           - **Role:** Developer
+           """)
+       
+   st.subheader("Manas Londhe")
+   st.markdown("""
+           - **GitHub Profile:** [GamerMANAS09](https://github.com/GamerMANAS09)
+           - **Role:** Developer
+           """)
+
+  
    
 
 
@@ -255,7 +395,7 @@ elif selected == "Contact":
         #     margin: auto;
         # }
         .form-title {
-            color: white;
+            color: black;
             font-size: 24px;
             font-weight: bold;
             text-align: center;
@@ -324,33 +464,4 @@ elif selected == "Contact":
     
            st.markdown("</div>", unsafe_allow_html=True)
            st.markdown("---")
-           st.header("Our Team")
-       
-           # Contact details of the team members
-           st.subheader("Anant Maurya")
-           st.markdown("""
-           - **GitHub Profile:** [mauryaanant005](https://github.com/mauryaanant005)
-           - **LinkedIn Profile:** [mauryaanant005]()          
-           - **Role:** Full Stack Developer
-           """)
-       
-           st.subheader("Anas Malkani")
-           st.markdown("""
-           - **GitHub Profile:** [ANASMALKANI189](https://github.com/ANASMALKANI189)
-           - **Role:** Data Scientist
-           """)
-       
-           st.subheader("Rayyan Bhati")
-           st.markdown("""
-           - **GitHub Profile:** [RAYYAN2906](https://github.com/RAYYAN2906)
-           - **Role:** Developer
-           """)
-       
-           st.subheader("Manas Londhe")
-           st.markdown("""
-           - **GitHub Profile:** [GamerMANAS09](https://github.com/GamerMANAS09)
-           - **Role:** Developer
-           """)
-
-
- 
+    
