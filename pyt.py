@@ -342,7 +342,7 @@ elif selected == "CricSet":
             st.write("No cricket news available at the moment.")
 
 elif selected == "About":
-   st.subheader("This website provides a detailed analysis of the T20 World Cup from 2007 to 2021. It offers comprehensive records for each World Cup, represented through various plots such as bar plots, pie plots, histograms, scatter plots, and line plots. We utilized powerful Python libraries, including NumPy for numerical operations, pandas for data manipulation, matplotlib for plotting, and Streamlit for creating interactive web applications. Additionally, the site includes interactive features that allow users to filter and explore the data in more depth.")
+   st.subheader("This website provides a detailed analysis of the T20 World Cup from 2007 to 2024. It offers comprehensive records for each World Cup. We utilized powerful Python libraries pandas for data manipulation and Streamlit for creating interactive web applications. Additionally, the site includes interactive features that allow users to filter and explore the data in more depth.")
    st.markdown("---")
    st.write("We offer insights, statistics, and historical data about the tournament and its key moments.")
    st.markdown("Location : Mumbai 🗺️")
