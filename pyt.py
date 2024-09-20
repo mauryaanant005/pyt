@@ -351,8 +351,7 @@ elif selected == "About":
            # Contact details of the team members
    st.subheader("Anant Maurya")
    st.markdown("""
-           - **GitHub Profile:** [mauryaanant005](https://github.com/mauryaanant005)
-           - **LinkedIn Profile:** [mauryaanant005]()          
+           - **GitHub Profile:** [mauryaanant005](https://github.com/mauryaanant005)        
            - **Role:** Full Stack Developer
            """)
        
